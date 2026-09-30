@@ -4,7 +4,7 @@
    ══════════════════════════════════════════════════════════ */
 
 /* ⚠️ Replace with your Render backend URL */
-const BACKEND_URL = "YOUR_RENDER_URL_HERE";
+const BACKEND_URL = "https://video-editer-backend.onrender.com";
 
 /* Detect demo mode (placeholder not replaced) */
 const IS_DEMO = BACKEND_URL.includes("YOUR_RENDER_URL_HERE");
