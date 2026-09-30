@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#08090d" />
+  <meta name="description" content="ClipForge AI — Turn podcasts into viral shorts with AI." />
+  <title>ClipForge AI · Podcast → Shorts Studio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <div class="app">
+
+    <!-- ═════════════ TOP BAR ═════════════ -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark"><span></span></div>
+        <div class="brand-text">
+          <h1>ClipForge<span>AI</span></h1>
+          <p>Podcast → Shorts Studio</p>
+        </div>
+      </div>
+
+      <nav class="steps" id="stepNav" aria-label="Workflow">
+        <button class="step is-active" data-step="input"><i>1</i><b>Source</b></button>
+        <button class="step" data-step="results" disabled><i>2</i><b>Clips</b></button>
+        <button class="step" data-step="editor" disabled><i>3</i><b>Pro Editor</b></button>
+        <button class="step" data-step="export" disabled><i>4</i><b>Export</b></button>
+      </nav>
+
+      <div class="topbar-actions">
+        <span class="status-pill" id="backendStatus"><i></i><b>Connecting…</b></span>
+        <button class="btn btn-ghost btn-sm" id="btnReset">New Project</button>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <!-- ═════════════ SECTION 1 : ENTRY & CONFIG ═════════════ -->
+      <section class="view is-active" id="view-input">
+
+        <div class="hero">
+          <span class="hero-tag">⚡ AI-Powered Clip Engine</span>
+          <h2>Turn long podcasts into <em>viral shorts</em> in seconds.</h2>
+          <p>Paste a YouTube link or drop a local file. ClipForge finds the hooks, cuts the clips, reframes them, and scores every moment for virality.</p>
+        </div>
+
+        <div class="stack">
+
+          <!-- SOURCE CARD -->
+          <div class="card">
+            <div class="card-head">
+              <h3><span class="num">1</span> Choose your source</h3>
+            </div>
+
+            <div class="tabs" role="tablist">
+              <button class="tab is-active" data-tab="link" role="tab">🔗 Paste YouTube Link</button>
+              <button class="tab" data-tab="upload" role="tab">⬆ Upload Local Video</button>
+            </div>
+
+            <div class="tab-panel is-active" id="tab-link">
+              <div class="input-group">
+                <span class="input-icon">▶</span>
+                <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=…" autocomplete="off" spellcheck="false" />
+              </div>
+              <button class="btn btn-primary btn-block" id="btnLoadLink">Load Video</button>
+              <p class="field-hint">Works with youtube.com/watch, youtu.be and /shorts links.</p>
+            </div>
+
+            <div class="tab-panel" id="tab-upload">
+              <label class="dropzone" id="dropzone" for="fileInput">
+                <input type="file" id="fileInput" accept="video/*" hidden />
+                <div class="dz-icon">⬆</div>
+                <strong>Drop your video here</strong>
+                <span>or click to browse — MP4, MOV, MKV, WEBM · up to 2 GB</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- THUMBNAIL PREVIEW -->
+          <div class="card preview-card is-hidden" id="sourcePreview">
+            <div class="preview-thumb">
+              <img id="previewThumb" alt="Video thumbnail" />
+              <span class="preview-badge" id="previewBadge">YouTube</span>
+              <span class="preview-duration" id="previewDuration">—:—</span>
+            </div>
+            <div class="preview-meta">
+              <span class="ok-chip">✔ Source confirmed</span>
+              <h4 id="previewTitle">Untitled video</h4>
+              <p id="previewSub">Ready to analyse</p>
+              <button class="btn btn-ghost btn-sm" id="btnChangeSource">Change source</button>
+            </div>
+          </div>
+
+          <!-- CONFIGURATION -->
+          <div class="card is-hidden" id="configPanel">
+            <div class="card-head">
+              <h3><span class="num">2</span> Configure your clips</h3>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Video Aspect Ratio</label>
+              <div class="segmented segmented-ratio" data-field="aspect">
+                <button class="seg is-active" data-value="9:16">
+                  <span class="ratio-box r-916"></span>
+                  <span class="seg-text"><b>9:16</b><small>Shorts / Reels</small></span>
+                </button>
+                <button class="seg" data-value="1:1">
+                  <span class="ratio-box r-11"></span>
+                  <span class="seg-text"><b>1:1</b><small>Square</small></span>
+                </button>
+                <button class="seg" data-value="16:9">
+                  <span class="ratio-box r-169"></span>
+                  <span class="seg-text"><b>16:9</b><small>Normal</small></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Duration per Clip</label>
+              <div class="segmented" data-field="duration">
+                <button class="seg" data-value="15">15s</button>
+                <button class="seg is-active" data-value="30">30s</button>
+                <button class="seg" data-value="60">60s</button>
+                <button class="seg" data-value="custom">Custom</button>
+              </div>
+
+              <div class="custom-duration is-hidden" id="customDuration">
+                <div class="cd-row">
+                  <div class="cd-field">
+                    <input type="number" id="customMin" min="0" max="59" value="0" inputmode="numeric" />
+                    <span>Minutes</span>
+                  </div>
+                  <div class="cd-sep">:</div>
+                  <div class="cd-field">
+                    <input type="number" id="customSec" min="0" max="59" value="45" inputmode="numeric" />
+                    <span>Seconds</span>
+                  </div>
+                </div>
+                <p class="cd-hint">Clips can be between <b>5s</b> and <b>3 minutes</b>.</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Number of Reels</label>
+              <div class="segmented" data-field="reels">
+                <button class="seg" data-value="1">1</button>
+                <button class="seg is-active" data-value="3">3</button>
+                <button class="seg" data-value="5">5</button>
+                <button class="seg" data-value="auto">Auto ✨</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- GENERATE -->
+          <div class="generate-wrap is-hidden" id="generateWrap">
+            <button class="btn btn-generate" id="btnGenerate">
+              <span class="gen-label">✨ Generate Clips</span>
+              <span class="gen-sub">AI will scan, cut, reframe &amp; score your best moments</span>
+            </button>
+
+            <div class="gen-progress is-hidden" id="genProgress">
+              <div class="gen-bar"><div class="gen-fill" id="genFill"></div></div>
+              <div class="gen-meta">
+                <span id="genStage">Analysing audio…</span>
+                <span id="genPct">0%</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═════════════ SECTION 2 : CLIP GALLERY ═════════════ -->
+      <section class="view" id="view-results">
+        <div class="view-head">
+          <div>
+            <h2>Your Generated Clips</h2>
+            <p id="resultsMeta">—</p>
+          </div>
+          <div class="view-head-actions">
+            <button class="btn btn-ghost" id="btnBackToInput">← New Source</button>
+          </div>
+        </div>
+
+        <div class="clip-grid" id="clipGrid"></div>
+      </section>
+
+      <!-- ═════════════ SECTION 3 : PRO EDITOR ═════════════ -->
+      <section class="view" id="view-editor">
+        <div class="editor-shell">
+
+          <!-- LEFT : PRO TOOLS -->
+          <aside class="tool-panel">
+            <div class="tool-panel-head">
+              <h3>Pro Tools</h3>
+              <span class="chip" id="editorClipLabel">Clip —</span>
+            </div>
+
+            <div class="tool-scroll">
+
+              <div class="tool">
+                <div class="tool-head">
+                  <span class="tool-ico">🗣️</span>
+                  <div><strong>Voice Dubbing</strong><small>Translate the speaker's voice</small></div>
+                </div>
+                <div class="tool-body">
+                  <div class="row-2">
+                    <label class="mini-field"><span>From</span>
+                      <select id="dubFrom" class="select">
+                        <option>English</option>
+                        <option>Hindi</option>
+                        <option>Bhojpuri</option>
+                        <option>Maithili</option>
+                      </select>
+                    </label>
+                    <label class="mini-field"><span>To</span>
+                      <select id="dubTo" class="select">
+                        <option>Hindi</option>
+                        <option>English</option>
+                        <option>Bhojpuri</option>
+                        <option>Maithili</option>
+                      </select>
+                    </label>
+                  </div>
+                  <button class="btn btn-tool" data-tool="dub" data-label="Dubbing voice">Apply Dubbing</button>
+                </div>
+              </div>
+
+              <div class="tool">
+                <div class="tool-head">
+                  <span class="tool-ico">🎛️</span>
+                  <div><strong>Voice Changer</strong><small>Morph the speaker's tone</small></div>
+                </div>
+                <div class="tool-body">
+                  <label class="mini-field"><span>Voice style</span>
+                    <select id="voiceStyle" class="select">
+                      <option>Robotic</option>
+                      <option>Deep Bass</option>
+                      <option>Chipmunk</option>
+                      <option>Echo Chamber</option>
+                      <option>Narrator</option>
+                      <option>Villain</option>
+                    </select>
+                  </label>
+                  <button class="btn btn-tool" data-tool="voice" data-label="Changing voice">Apply Voice</button>
+                </div>
+              </div>
+
+              <div class="tool">
+                <div class="tool-head">
+                  <span class="tool-ico">💬</span>
+                  <div><strong>Hormozi 3D Captions</strong><small>Bold animated word pop-ups</small></div>
+                </div>
+                <div class="tool-body">
+                  <label class="switch-row">
+                    <span>Enable captions</span>
+                    <input type="checkbox" class="switch" id="toggleCaptions" data-tool="captions" />
+                    <i class="switch-ui"></i>
+                  </label>
+                </div>
+              </div>
+
+              <div class="tool">
+                <div class="tool-head">
+                  <span class="tool-ico">🎬</span>
+                  <div><strong>AI B-Roll &amp; Meme SFX</strong><small>Auto visuals + sound stingers</small></div>
+                </div>
+                <div class="tool-body">
+                  <div class="row-2">
+                    <button class="btn btn-tool" data-tool="broll" data-label="Adding AI B-Roll">Add B-Roll</button>
+                    <button class="btn btn-tool" data-tool="sfx" data-label="Adding meme SFX">Meme SFX</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tool">
+                <div class="tool-head">
+                  <span class="tool-ico">🎚️</span>
+                  <div><strong>Studio Sound</strong><small>AI noise &amp; echo killer</small></div>
+                </div>
+                <div class="tool-body">
+                  <label class="switch-row">
+                    <span>Noise reduction</span>
+                    <input type="checkbox" class="switch" id="toggleStudio" data-tool="studio" />
+                    <i class="switch-ui"></i>
+                  </label>
+                </div>
+              </div>
+
+              <div class="tool">
+                <div class="tool-head">
+                  <span class="tool-ico">🖼️</span>
+                  <div><strong>Viral Thumbnail</strong><small>AI-generated click magnet</small></div>
+                </div>
+                <div class="tool-body">
+                  <button class="btn btn-tool" data-tool="thumbnail" data-label="Generating thumbnail">Generate Thumbnail</button>
+                  <div class="thumb-result is-hidden" id="thumbResult">
+                    <img id="thumbResultImg" alt="Generated thumbnail" />
+                    <span>✔ Thumbnail ready</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </aside>
+
+          <!-- CENTER : PLAYER + TIMELINE -->
+          <div class="editor-center">
+
+            <div class="stage">
+              <div class="player-frame" id="playerFrame">
+                <video id="editorVideo" playsinline preload="metadata"></video>
+
+                <div class="caption-layer is-hidden" id="captionLayer">
+                  <span class="cap-word">THIS</span>
+                  <span class="cap-word">CHANGES</span>
+                  <span class="cap-word cap-hot">EVERYTHING</span>
+                </div>
+
+                <div class="safe-area" aria-hidden="true"></div>
+
+                <!-- 0 → 100% live processing overlay -->
+                <div class="processing-overlay is-hidden" id="processingOverlay">
+                  <div class="proc-ring" id="procRing" style="--p:0">
+                    <div class="proc-ring-inner"><span id="procPct">0%</span></div>
+                  </div>
+                  <p class="proc-title" id="procTitle">Processing…</p>
+                  <p class="proc-sub" id="procSub">This happens live — no page reload</p>
+                </div>
+              </div>
+
+              <div class="transport">
+                <button class="tp-btn" id="tpPlay" title="Play / Pause">▶</button>
+                <span class="tp-time"><b id="tpCurrent">0:00</b> / <span id="tpTotal">0:00</span></span>
+                <div class="tp-track" id="tpTrack"><div class="tp-fill" id="tpFill"></div></div>
+                <button class="tp-btn" id="tpMute" title="Mute">🔊</button>
+                <button class="btn btn-primary btn-sm" id="btnGoExport">Export →</button>
+              </div>
+            </div>
+
+            <div class="timeline">
+              <div class="tl-head">
+                <span class="tl-title">Timeline</span>
+                <span class="tl-hint">Click the ruler to seek</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-labels" id="tlLabels"></div>
+                <div class="tl-lanes" id="tlLanes">
+                  <div class="tl-ruler" id="tlRuler"></div>
+                  <div class="tl-lane-group" id="tlLaneGroup"></div>
+                  <div class="tl-playhead" id="tlPlayhead"><i></i></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════════ SECTION 4 : FINAL EXPORT ═════════════ -->
+      <section class="view" id="view-export">
+        <div class="view-head">
+          <div>
+            <h2>Final Export</h2>
+            <p id="exportMeta">Choose your quality and download your reel.</p>
+          </div>
+          <div class="view-head-actions">
+            <button class="btn btn-ghost" id="btnBackToEditor">← Back to Editor</button>
+          </div>
+        </div>
+
+        <div class="export-grid">
+          <div class="card export-preview-card">
+            <div class="export-stage">
+              <video id="exportVideo" playsinline controls preload="metadata"></video>
+            </div>
+            <div class="export-thumb is-hidden" id="exportThumbWrap">
+              <img id="exportThumbImg" alt="Viral thumbnail" />
+              <span class="chip chip-hot">🔥 Viral Thumbnail</span>
+            </div>
+          </div>
+
+          <div class="card export-controls">
+            <h3>Download Settings</h3>
+
+            <div class="field">
+              <label class="field-label">Quality</label>
+              <select class="select select-lg" id="qualitySelect">
+                <option value="720">720p — HD</option>
+                <option value="1080" selected>1080p — Full HD</option>
+                <option value="2160">4K — Ultra HD</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Format</label>
+              <select class="select select-lg" id="formatSelect">
+                <option value="mp4" selected>MP4 (H.264)</option>
+                <option value="mov">MOV (ProRes)</option>
+                <option value="webm">WEBM (VP9)</option>
+              </select>
+            </div>
+
+            <div class="export-summary" id="exportSummary">
+              <div><span>Aspect</span><b id="sumAspect">9:16</b></div>
+              <div><span>Duration</span><b id="sumDuration">0:30</b></div>
+              <div><span>Viral score</span><b id="sumScore">—</b></div>
+            </div>
+
+            <button class="btn btn-primary btn-block btn-lg" id="btnDownload">
+              ⬇ Download Reel &amp; Thumbnail
+            </button>
+
+            <div class="gen-progress is-hidden" id="exportProgress">
+              <div class="gen-bar"><div class="gen-fill" id="exportFill"></div></div>
+              <div class="gen-meta">
+                <span id="exportStage">Encoding…</span>
+                <span id="exportPct">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <span>ClipForge AI · Frontend on GitHub Pages · Backend on Render</span>
+      <span id="footerMode">Demo Mode</span>
+    </footer>
+  </div>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <!-- api.js MUST load first — ui.js consumes the global API object -->
+  <script src="api.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>
