@@ -2,7 +2,7 @@
    ClipForge AI — API Layer
    ══════════════════════════════════════════════════════════ */
 
-const BACKEND_URL = "YOUR_RENDER_URL_HERE";
+const BACKEND_URL = "https://video-editer-backend.onrender.com";
 const IS_DEMO = BACKEND_URL.includes("YOUR_RENDER_URL_HERE");
 
 const DEMO_VIDEOS = [
